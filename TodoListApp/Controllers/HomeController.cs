@@ -20,7 +20,18 @@ namespace TodoListApp.Controllers
 
 		public IActionResult Index()
 		{
-			return View();
+			List<TodoModel> TodoModels = new List<TodoModel>();
+			for (int i = 0; i < 3; i++)
+			{
+				TodoModel todoModel = new TodoModel() { 
+					Id=i,
+					IsComplete=true,
+					Name="test"
+				};
+				TodoModels.Add(todoModel);
+
+			}
+			return View(TodoModels);
 		}
 
 		public IActionResult Privacy()
