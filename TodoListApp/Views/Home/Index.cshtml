@@ -1,30 +1,16 @@
 ﻿@model IEnumerable<TodoListApp.Models.TodoModel>
 
-<h2>ToDo List</h2>
-
-<table>
-
-    @foreach (var item in Model)
-    {
-    <tr>
-        <td>
-            <input type="checkbox" name="isComplete" value="@item.Id" @(item.IsComplete ? "checked" : "") />
-        </td>
-        <td>@item.Name</td>
-        <td>
-            <!-- 修改按鈕 -->
-            <form method="get" action="/ToDo/Edit" style="display:inline;">
-                <input type="hidden" name="id" value="@item.Id" />
-                <input type="submit" value="Edit" />
-            </form>
-            <!-- 刪除按鈕 -->
-            <form method="post" action="/ToDo/Delete" style="display:inline;">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@item.Id" />
-                <input type="submit" value="Delete" onclick="return confirm('Are you sure?');" />
-            </form>
-        </td>
-    </tr>
-    }
+<h2>新增代辦事項</h2>
+<form id="addTodoForm">
+    <input type="text" id="todoName" placeholder="New Todo Name" />
+    <button type="submit">Add Todo</button>
+</form>
+<br>
+<h2>代辦事項</h2>
+<table id="todoTable">
+    <tbody>
+        <!-- JavaScript動態填充待辦事项 -->
+    </tbody>
 </table>
 
+<script src="~/js/todo.js"></script><!-- JavaScript代碼文件 -->
