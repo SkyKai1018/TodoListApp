@@ -16,6 +16,8 @@ function fetchTodos()
             tableBody.innerHTML = ''; 
             data.forEach(item => {
             let row = tableBody.insertRow();
+            row.setAttribute('data-id', item.id);
+
             let cell1 = row.insertCell(0);
             //生成checkbox
             let checkbox = document.createElement('input');
@@ -28,11 +30,11 @@ function fetchTodos()
             let cell2 = row.insertCell(1);
             cell2.textContent = item.name;
 
-            //生成刪除btn
+            //生成編輯btn
             let cell3 = row.insertCell(2);
             cell3.innerHTML = `<button onclick="editTodo(${item.id})">Edit</button>`;
 
-            //生成編輯btn
+            //生成刪除btn
             let cell4 = row.insertCell(3);
             cell4.innerHTML = `<button onclick = "deleteTodo(${item.id})" > Delete </button>`;
 
@@ -40,6 +42,7 @@ function fetchTodos()
         });
 }
 
+//新增待辦事項
 function addTodo()
 {
     const todoName = document.getElementById('todoName').value;
@@ -59,6 +62,7 @@ function addTodo()
      });
 }
 
+//刪除指定的待辦事項
 function deleteTodo(id)
 {
     fetch(`/api/TodoItems/${id}`, {
@@ -84,6 +88,7 @@ function toggleComplete(item, isComplete) {
     })
         .then(response => {
             if (response.ok) {
+                //fetchTodos();
                 console.log('Todo item updated successfully');
             } else {
                 console.error('Failed to update todo item');
@@ -91,3 +96,48 @@ function toggleComplete(item, isComplete) {
         })
         .catch(error => console.error('Error:', error));
 }
+
+// 編輯待辦事項
+function editTodo(id) {
+    const row = document.querySelector(`tr[data-id='${id}']`);
+
+    const nameCell = row.cells[1];
+    const currentName = nameCell.textContent;
+
+    nameCell.innerHTML = `<input type="text" value="${currentName}" />`;
+
+    const editButtonCell = row.cells[2];
+
+    editButtonCell.innerHTML = `<button onclick="finishEdit(${id},this)">完成</button>`;
+}
+
+function finishEdit(id, button) {
+    const row = button.closest('tr');
+    const input = row.querySelector('input[type="text"]');
+    const newName = input.value;
+    const isComplete = row.querySelector('input[type="checkbox"]').checked;
+
+    const updatedTodo = {
+        id: id,
+        name: newName,
+        isComplete: isComplete 
+    };
+
+    fetch(`/api/TodoItems/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedTodo)
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log('Todo item updated successfully');
+                fetchTodos();
+            } else {
+                throw new Error('Failed to update todo item');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
