@@ -1,9 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
+using TodoListApp.Models;
+using TodoListApp.Services;
 
 namespace TodoListApp.Controllers
 {
@@ -11,25 +12,26 @@ namespace TodoListApp.Controllers
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ITodoItemService _todoItemService;
 
-        public TodoItemsController(ApplicationDbContext context)
+        public TodoItemsController(ITodoItemService todoItemService)
         {
-            _context = context;
+            _todoItemService = todoItemService;
         }
 
         // GET: api/TodoItems
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoModel>>> GetTodoItems()
         {
-            return await _context.ToDoItems.ToListAsync();
+            var todoItem = await _todoItemService.GetAllTodoItemsAsync();
+            return Ok(todoItem);
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoModel>> GetTodoItem(int id)
         {
-            var todoItem = await _context.ToDoItems.FindAsync(id);
+            var todoItem = await _todoItemService.GetTodoItemByIdAsync(id);
 
             if (todoItem == null)
             {
@@ -43,10 +45,8 @@ namespace TodoListApp.Controllers
         [HttpPost]
         public async Task<ActionResult<TodoModel>> PostTodoItem(TodoModel todoItem)
         {
-            _context.ToDoItems.Add(todoItem);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);
+            var createdTodoItem = await _todoItemService.AddTodoItemAsync(todoItem);
+            return CreatedAtAction(nameof(GetTodoItem), new { id = createdTodoItem.Id }, createdTodoItem);
         }
 
         // PUT: api/TodoItems/5
@@ -58,15 +58,13 @@ namespace TodoListApp.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(todoItem).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _todoItemService.UpdateTodoItemAsync(todoItem);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.ToDoItems.Any(e => e.Id == id))
+                if (!(await TodoItemExists(id)))
                 {
                     return NotFound();
                 }
@@ -79,19 +77,23 @@ namespace TodoListApp.Controllers
             return NoContent();
         }
 
+        private async Task<bool> TodoItemExists(int id)
+        {
+            var todoItem = await _todoItemService.GetTodoItemByIdAsync(id);
+            return todoItem != null;
+        }
+
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoItem(int id)
         {
-            var todoItem = await _context.ToDoItems.FindAsync(id);
+            var todoItem = await _todoItemService.GetTodoItemByIdAsync(id);
             if (todoItem == null)
             {
                 return NotFound();
             }
 
-            _context.ToDoItems.Remove(todoItem);
-            await _context.SaveChangesAsync();
-
+            await _todoItemService.DeleteTodoItemAsync(id);
             return NoContent();
         }
     }
