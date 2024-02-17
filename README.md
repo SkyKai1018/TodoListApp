@@ -17,8 +17,8 @@
 - Entity Framework Core
 - MSTest
 
-#＃ 資料夾結構
-
+## 資料夾結構
+```
 TodoListApp/
 │
 ├── TodoListApp/ (主項目)
@@ -33,6 +33,7 @@ TodoListApp/
 │ └── TodoItemServiceTests.cs (TodoList CRUD 服務層測試)
 │
 └── TodoListApp.sln (解決方案檔)
+```
 
 ## 單元測試
 
