@@ -1,6 +1,7 @@
 ## 專案介紹
 
 這是一個簡單的TodoList應用，使用ASP.NET Core 3.0開發。它允許用戶添加、查看、修改以及刪除待辦事項。
+![image](https://github.com/SkyKai1018/TodoListApp/assets/135136212/3c45fc19-8d6c-47d5-a785-c732421b2d6d)
 
 ## 功能
 
@@ -38,3 +39,4 @@ TodoListApp/
 ## 單元測試
 
 項目包含MSTest單元測試，測試基本Service增刪改查及controller功能。
+![image](https://github.com/SkyKai1018/TodoListApp/assets/135136212/ba19301d-4c0f-4c09-adfd-b054ae27bf67)
