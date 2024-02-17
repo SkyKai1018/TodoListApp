@@ -38,7 +38,7 @@ namespace TodoListApp.Controllers
                 return NotFound();
             }
 
-            return todoItem;
+            return Ok(todoItem);
         }
 
         // POST: api/TodoItems
